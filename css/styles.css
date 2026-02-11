@@ -398,7 +398,7 @@ input, select, textarea { font: inherit; }
   width: 480px;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.07;
+  opacity: 0.105;
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40%);
   mask-image: linear-gradient(to right, transparent 0%, black 40%);
 }
@@ -407,8 +407,90 @@ input, select, textarea { font: inherit; }
   height: 100%;
 }
 
+/* Lighthouse — left side */
+.hero__skyline--left {
+  left: 0;
+  right: auto;
+  width: 520px;
+  opacity: 0.18;
+  -webkit-mask-image: linear-gradient(to left, transparent 0%, black 40%);
+  mask-image: linear-gradient(to left, transparent 0%, black 40%);
+}
+
+/* Lighthouse beam sweep */
+.lighthouse-light {
+  transform-origin: 100px 230px;
+  animation: beam-sweep 6s ease-in-out infinite alternate;
+}
+@keyframes beam-sweep {
+  0%   { transform: rotate(-8deg); opacity: 0.6; }
+  50%  { opacity: 1; }
+  100% { transform: rotate(8deg); opacity: 0.6; }
+}
+
+/* City window lights — separate layer above skyline */
+.hero__windows {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 480px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.5;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40%);
+  mask-image: linear-gradient(to right, transparent 0%, black 40%);
+}
+.hero__windows svg {
+  width: 100%;
+  height: 100%;
+}
+.city-windows { opacity: 1; }
+.win { animation: twinkle 4s ease-in-out infinite; }
+.win--a { animation-delay: 0s; }
+.win--b { animation-delay: 1s; }
+.win--c { animation-delay: 2.2s; }
+.win--d { animation-delay: 3.1s; }
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  20%      { opacity: 1; }
+  50%      { opacity: 0.6; }
+  70%      { opacity: 1; }
+  90%      { opacity: 0.2; }
+}
+
+/* Work van — full-width layer pinned to hero bottom */
+.hero__van {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 20px;
+  z-index: 1;
+  pointer-events: none;
+}
+.van-drive {
+  position: absolute;
+  bottom: 0;
+  animation: van-pos 28s ease-in-out infinite;
+}
+.van-flip {
+  display: block;
+  animation: van-dir 28s step-end infinite;
+}
+@keyframes van-pos {
+  0%, 100% { left: 15%; }
+  50%      { left: 68%; }
+}
+@keyframes van-dir {
+  0%  { transform: scaleX(1); }
+  50% { transform: scaleX(-1); }
+}
+
 @media (max-width: 768px) {
   .hero__skyline { width: 280px; opacity: 0.05; }
+  .hero__skyline--left { width: 240px; opacity: 0.08; }
+  .hero__windows { width: 280px; opacity: 0.35; }
 }
 
 /* Hero badge watermark - Remove */
@@ -594,6 +676,38 @@ input, select, textarea { font: inherit; }
   max-width: 720px;
   margin-bottom: var(--space-lg);
 }
+.about__badges {
+  display: flex;
+  gap: var(--space-lg);
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--accent);
+}
+.badge-item svg {
+  stroke: var(--accent);
+  width: 36px;
+  height: 36px;
+}
+.badge-item__year {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+}
+.badge-item span {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 .about__body {
   display: flex;
   align-items: flex-start;
@@ -657,6 +771,7 @@ input, select, textarea { font: inherit; }
 @media (max-width: 768px) {
   .about__dark { padding: var(--space-xl) 0; }
   .about__body { margin-left: 0; flex-direction: column; align-items: center; text-align: center; gap: var(--space-md); }
+  .about__badges { flex-wrap: wrap; justify-content: center; gap: var(--space-md); }
   .about__badge img { width: 100px; height: 100px; }
   .stats__grid { grid-template-columns: repeat(2, 1fr); }
   .stats__item { padding: var(--space-md) var(--space-sm); }
