@@ -464,4 +464,18 @@
       }, 1200);
     }
   }, { passive: true });
+
+  // ── Emergency Phone Toggle ──
+  var emergencyBtn = document.getElementById('emergencyToggle');
+  var emergencyMenu = document.getElementById('emergencyMenu');
+  if (emergencyBtn && emergencyMenu) {
+    emergencyBtn.addEventListener('click', function () {
+      emergencyMenu.classList.toggle('open');
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.emergency-container')) {
+        emergencyMenu.classList.remove('open');
+      }
+    });
+  }
 })();
