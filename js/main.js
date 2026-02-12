@@ -126,25 +126,18 @@
       btn.textContent = 'Sending\u2026';
       btn.disabled = true;
 
-      var action = form.getAttribute('action');
-      if (action && action.indexOf('YOUR_FORM_ID') === -1) {
-        // Real Formspree endpoint configured
-        var data = new FormData(form);
-        fetch(action, {
-          method: 'POST',
-          body: data,
-          headers: { 'Accept': 'application/json' }
-        }).then(function (res) {
-          if (res.ok) { showSuccess(); }
-          else { btn.textContent = 'Send Request'; btn.disabled = false; showErr(btn, 'Something went wrong. Please try again.'); }
-        }).catch(function () {
-          btn.textContent = 'Send Request'; btn.disabled = false;
-          showErr(btn, 'Network error. Please try again.');
-        });
-      } else {
-        // No endpoint yet — show success for demo
-        setTimeout(function () { showSuccess(); }, 600);
-      }
+      var data = new FormData(form);
+      fetch(form.getAttribute('action'), {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      }).then(function (res) {
+        if (res.ok) { showSuccess(); }
+        else { btn.textContent = 'Request Estimate'; btn.disabled = false; showErr(btn, 'Something went wrong. Please try again.'); }
+      }).catch(function () {
+        btn.textContent = 'Request Estimate'; btn.disabled = false;
+        showErr(btn, 'Network error. Please try again.');
+      });
     });
   }
 

@@ -1137,19 +1137,6 @@ input, select, textarea { font: inherit; }
   flex-wrap: wrap;
   gap: var(--space-sm);
 }
-.footer__social {
-  display: flex;
-  gap: var(--space-sm);
-}
-.footer__social a {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--light);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  transition: color 0.2s;
-}
-.footer__social a:hover { color: var(--black); }
 
 @media (max-width: 640px) {
   .footer { padding: var(--space-md) 0; }
