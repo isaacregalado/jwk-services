@@ -186,39 +186,55 @@
   var mapEl = document.getElementById('areas-map');
   if (!mapEl || typeof L === 'undefined' || typeof townData === 'undefined') return;
 
+  // Self-contained basemap: no third-party tile server, no API key.
+  // Water is the container background; land comes from bundled Census boundaries.
   var map = L.map(mapEl, {
-    center: [40.78, -73.28],
-    zoom: 10,
     zoomControl: false,
     scrollWheelZoom: false,
+    attributionControl: true,
     minZoom: 7,
-    maxZoom: 15
+    maxZoom: 13,
+    maxBounds: [[39.9, -75.4], [42.0, -71.0]],
+    maxBoundsViscosity: 0.8,
+    zoomSnap: 0.25
   });
+  map.attributionControl.setPrefix(false);
+  map.attributionControl.addAttribution('Boundaries: U.S. Census Bureau');
 
   L.control.zoom({ position: 'topright' }).addTo(map);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(map);
+  // Surrounding land (NJ, Westchester, CT, plus a base layer under Long Island and NYC)
+  if (typeof contextLand !== 'undefined') {
+    L.polygon(contextLand, {
+      color: '#cfcac0',
+      weight: 0.6,
+      fillColor: '#efece6',
+      fillOpacity: 1,
+      interactive: false,
+      smoothFactor: 1
+    }).addTo(map);
+  }
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd',
-    maxZoom: 19,
-    opacity: 0.45,
-    pane: 'overlayPane'
-  }).addTo(map);
+  // Water labels
+  [
+    { t: 'Long Island Sound', ll: [41.07, -73.0] },
+    { t: 'Atlantic Ocean', ll: [40.5, -72.95] }
+  ].forEach(function (w) {
+    L.marker(w.ll, {
+      interactive: false,
+      keyboard: false,
+      icon: L.divIcon({ className: 'map-water-label', html: w.t, iconSize: [160, 16], iconAnchor: [80, 8] })
+    }).addTo(map);
+  });
 
   // ── Styles ──
-  var baseStyle   = { weight: 1, opacity: 0.6, fillOpacity: 0.12, smoothFactor: 1.2 };
-  var hoverStyle  = { weight: 1.5, opacity: 0.8, fillOpacity: 0.22 };
-  var activeStyle = { weight: 2, opacity: 1, fillOpacity: 0.32 };
+  var baseStyle   = { weight: 1, opacity: 0.75, fillOpacity: 0.28, smoothFactor: 1 };
+  var hoverStyle  = { weight: 1.5, opacity: 0.9, fillOpacity: 0.45 };
+  var activeStyle = { weight: 2, opacity: 1, fillOpacity: 0.62 };
 
   var liRegions = ['north-shore', 'central', 'south-shore', 'east-end'];
   var activeRegion = null;
-  var defaultCenter = [40.78, -73.28];
-  var defaultZoom = 10;
+  var defaultBounds = null;
 
   // ── Build per-town polygons, grouped by region ──
   var townsByRegion = {};  // regionKey -> [{polygon, data}]
@@ -272,6 +288,13 @@
     polygon.on('click', function () { activateRegion(t.r); });
   });
 
+  // Fit the whole service area (works at any map size, including phones)
+  allPolygons.forEach(function (e) {
+    var b = e.polygon.getBounds();
+    defaultBounds = defaultBounds ? defaultBounds.extend(b) : L.latLngBounds(b.getSouthWest(), b.getNorthEast());
+  });
+  if (defaultBounds) map.fitBounds(defaultBounds, { padding: [12, 12] });
+
   // ── HQ marker ──
   var hqIcon = L.divIcon({
     className: 'hq-marker',
@@ -281,7 +304,7 @@
   });
   L.marker([40.8682, -73.4257], { icon: hqIcon })
     .addTo(map)
-    .bindTooltip('HQ — Huntington', {
+    .bindTooltip('JWK HQ, Huntington', {
       direction: 'top',
       offset: [0, -8],
       className: 'hq-tooltip'
@@ -329,7 +352,7 @@
       }
     }
     activeRegion = null;
-    map.flyTo(defaultCenter, defaultZoom, { duration: 0.8 });
+    if (defaultBounds) map.flyToBounds(defaultBounds, { padding: [12, 12], duration: 0.8 });
   }
 
   function activateRegion(key) {
@@ -458,7 +481,10 @@
     }
   }, { passive: true });
 
-  // ── Emergency Phone Toggle ──
+})();
+
+// ── Emergency Phone Toggle (independent of the map) ──
+(function () {
   var emergencyBtn = document.getElementById('emergencyToggle');
   var emergencyMenu = document.getElementById('emergencyMenu');
   if (emergencyBtn && emergencyMenu) {

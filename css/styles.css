@@ -348,6 +348,9 @@ input, select, textarea { font: inherit; }
   padding: 6px 12px;
   border-radius: 4px;
 }
+@media (max-width: 640px) {
+  .hero__label { font-size: 11px; letter-spacing: 0.06em; line-height: 1.5; max-width: 300px; }
+}
 
 .hero__heading {
   font-family: var(--sans);
@@ -543,11 +546,12 @@ input, select, textarea { font: inherit; }
 }
 
 .clients__track img {
-  height: 40px; /* Consistent height */
+  height: 34px; /* Consistent height */
   width: auto;
+  max-width: 150px;
   object-fit: contain;
   filter: grayscale(100%);
-  opacity: 0.5;
+  opacity: 0.6;
   transition: all 0.3s ease;
 }
 
@@ -651,6 +655,16 @@ input, select, textarea { font: inherit; }
   line-height: 1.7;
   color: var(--mid);
   max-width: 560px;
+}
+
+@media (min-width: 900px) {
+  .work__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--space-lg);
+  }
+  .work__item { gap: var(--space-md); padding: var(--space-md) 0; }
+  .work__item:nth-last-child(2) { border-bottom: 1px solid var(--border); }
 }
 
 @media (max-width: 768px) {
@@ -922,7 +936,23 @@ input, select, textarea { font: inherit; }
 .areas__map {
   width: 100%;
   height: 400px;
-  background: var(--surface);
+  background: #d9e4ec; /* water */
+}
+.areas__map.leaflet-container { background: #d9e4ec; font-family: var(--sans); }
+.map-water-label {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: #7f97a8;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.areas__map .leaflet-control-attribution {
+  font-size: 10px;
+  background: rgba(255,255,255,0.7);
+  color: #777;
 }
 
 .areas__note {
@@ -1075,7 +1105,7 @@ input, select, textarea { font: inherit; }
    FOOTER
    ============================================ */
 .footer {
-  padding: var(--space-lg) 0 var(--space-md);
+  padding: var(--space-lg) 0 96px; /* room for the floating emergency button */
   background: var(--cream);
   border-top: 1px solid var(--border);
 }
